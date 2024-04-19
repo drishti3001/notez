@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100;9..40,200;9..40,400;9..40,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Notes.io</title>
+    <style>
+        body{
+            margin: 50px 50px;
+            background-color: black;
+            color: white;
+            font-family: 'DM Sans', sans-serif;
+        }
+        #header{
+            display: flex;
+            justify-content: space-between;
+        }
+        #newnote{
+            cursor: pointer;
+            height: 50px;
+            width: 130px;
+            position: relative;
+            top: 45px;
+            right: 10px;
+            color: black;
+            background-color: yellow;
+            border: 1px solid gray;
+            border-radius: 25px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        #savenote{
+            cursor: pointer;
+            height: 50px;
+            width: 130px;
+            color: black;
+            background-color: yellow;
+            border: 1px solid gray;
+            border-radius: 25px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 25px;
+        }
+        #main{
+            display: flex;
+            justify-content: space-between;
+        }
+        #leftnav{
+            display: flex;
+            flex-direction: column;
+            background-color: rgb(48, 48, 48);
+            border-radius: 20px;
+            border-bottom: 3px solid gray;
+            width: 25vw;
+            min-width: 200px;
+            height: max-content;
+            min-height: 80px;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+        #rightnav{
+            display: flex;
+            flex-direction: column;
+            align-items: end;
+        }
+        #textarea{
+            border: 5px solid rgb(48, 48, 48);
+            background-color: black;
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 60vw;
+            min-height: 350px;
+            resize: none;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 20px;
+            margin-left: 20px;
+        }
+        input:focus, textarea {
+            outline: none !important;
+        }
+        .notesum{
+            border-bottom: 1px solid gray;
+            text-decoration: none;
+            justify-content: space-between;
+            align-items: center;
+            display: flex;
+            width: 100%;
+            height: 80px;
+            opacity: 50%;
+        }
+        .detes{
+            display: flex;
+            flex-direction: column;
+        }
+        .notesum *{
+            margin-top: 3px;
+            margin-bottom: 3px;
+        }
+        .notesum h3{
+            color: yellow;
+            cursor: pointer;
+            transition: all;
+            transition-duration: 0.2s;
+        }
+        .notesum h5{
+            color: rgb(153, 153, 153);
+        }
+        .trashcan{
+            height: 20px;
+            width: 20px;
+            filter: invert();
+            cursor: pointer;
+        }
+        .activenote h3{
+            font-size: 23px;
+        }
+        .activenote{
+            opacity: 100%;
+        }
+        @media screen and (max-width: 1115px) {
+            #main{
+                flex-direction: column;
+                align-items: center;
+            }
+            #leftnav{
+                margin-bottom: 30px;
+            }
+            #textarea{
+                margin-left: 0px;
+            }
+        }
+        @media screen and (max-width: 535px) {
+            #header{
+                flex-direction: column;
+            }
+            #newnote{
+                top: -20px;
+            }
+            #header{
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1 style="font-size: 50px;">Notes.io</h1>
+        <button id="newnote" onclick="makenewnote()">New Note</button>
+    </div>
+    <div id="main">
+        <div id="leftnav">
+            <div class="notesum activenote" id="1">
+                <div class="detes">
+                    <h3 onclick="makeactive(this)">My First Note</h3>
+                    <h5>New line goes here</h5>
+                </div>
+                <img src="https://iconmonstr.com/wp-content/g/gd/makefg.php?i=../releases/preview/2013/png/iconmonstr-trash-can-1.png&r=0&g=0&b=0" alt="trash" class="trashcan" onclick="delnote(this)">
+            </div>
+        </div>
+        <div id="rightnav">
+            <textarea name="text" id="textarea" cols="30" rows="10" placeholder="Enter Text Here, (Ctrl + M) to Save" spellcheck="false"></textarea>
+            <button id="savenote" onclick="savenote()">Save <i class="fa fa-save"></i></button>
+        </div>
+    </div>
+    <script>
+        let id = 2;
+        let lastactivenote = "0";
+        let activenote = "1";
+        let notes = {1 : ""};
+        function makenewnote(){
+            let leftnav = document.getElementById("leftnav");
+            let note = document.createElement("div");
+            note.setAttribute("class", "notesum");
+            let newid = id.toString();
+            note.setAttribute("id", newid);
+            notes[id] = "";
+            id = id + 1;
+            let note_dete = document.createElement("div");
+            note_dete.setAttribute("class", "detes");
+            let h3 = document.createElement("h3");
+            h3.innerHTML = prompt("Enter Title");
+            h3.setAttribute("onclick", "makeactive(this)");
+            let h5 = document.createElement("h5");
+            h5.innerHTML = prompt("Enter Description");
+            if(h3.innerHTML == undefined || h5.innerHTML == undefined){
+                return;
+            }
+            note_dete.appendChild(h3);
+            note_dete.appendChild(h5);
+            let img = document.createElement("img");
+            img.setAttribute("src", "https://iconmonstr.com/wp-content/g/gd/makefg.php?i=../releases/preview/2013/png/iconmonstr-trash-can-1.png&r=0&g=0&b=0");
+            img.setAttribute("alt", "trash");
+            img.setAttribute("class", "trashcan");
+            img.setAttribute("onclick", "delnote(this)");
+            note.appendChild(note_dete);
+            note.appendChild(img);
+            leftnav.appendChild(note);
+            makeactive(h3);
+        }
+        function delnote(elem){
+            if(elem.parentNode.id == activenote){
+                document.getElementById("textarea").value = "";
+            }
+            let note = elem.parentNode;
+            note.remove();
+            delete notes[parseInt(elem.parentNode.id)];
+            
+        }
+        function makeactive(elem){
+            if(elem.parentNode.parentNode.id !== activenote){
+                lastactivenote = activenote;
+                activenote = elem.parentNode.parentNode.id;
+                elem.parentNode.parentNode.classList.add("activenote");
+                document.getElementById("textarea").removeAttribute("disabled");
+                document.getElementById("textarea").value = notes[activenote];
+                if(lastactivenote !== "0"){
+                    let remnote = document.getElementById(lastactivenote);
+                    remnote.classList.remove("activenote");
+                }
+            }
+        }
+        function savenote(){
+            let text = document.getElementById("textarea").value;
+            if(activenote !== "0"){
+                notes[activenote] = text;
+            }
+            let savenote = document.getElementById("savenote");
+            savenote.innerHTML = "Saved &#x2713;";
+            setTimeout(function(){
+                savenote.innerHTML = 'Save <i class="fa fa-save">';
+            }, 1000);
+        }
+        document.onkeyup = function(e) {
+            if (e.ctrlKey && e.which == 77) {
+                savenote();
+            }
+        }
+    </script>
+</body>
+</html>
